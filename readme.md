@@ -1,87 +1,112 @@
-# Project Title
+# Introducción a RAGs con LangChain, OpenAI/Groq y Pinecone
 
-One Paragraph of project description goes here
+Este proyecto demuestra la implementación de un **RAG** utilizando LangChain como framework, Pinecone como base de datos vectorial, y dos variantes: una con OpenAI y otra con Groq + HuggingFace (gratuita).
 
-## Getting Started
+Siguiendo el tutorial: `https://python.langchain.com/docs/tutorials/rag/`
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
-### Prerequisites
-
-What things you need to install the software and how to install them
+## Arquitectura
 
 ```
-Give examples
+Documento (PDF/Web)
+        ↓
+   Dividir en chunks (RecursiveCharacterTextSplitter)
+        ↓
+   Generar embeddings (OpenAI / HuggingFace)
+        ↓
+   Guardar en Pinecone (Vector Store)
+        ↓
+   Pregunta del usuario
+        ↓
+   Recuperar chunks relevantes (Retriever)
+        ↓
+   Generar respuesta con contexto (GPT-4o-mini / LLaMA 3.3 via Groq)
 ```
 
-### Installing
+## Archivos
 
-A step by step series of examples that tell you how to get a development env running
+| Archivo | Descripción |
+|---|---|
+| `RAG-openai.py` | RAG usando **OpenAI** para embeddings (`text-embedding-3-large`) y LLM (`gpt-4o-mini`). Indexa un PDF desde un link. |
+| `RAG-.py` | RAG usando **HuggingFace** para embeddings (`all-MiniLM-L6-v2`, corre local) y **Groq** como LLM (`llama-3.3-70b-versatile`).. |
 
-Say what the step will be
+Ambos archivos indexan el mismo documento y exponen la misma cadena RAG — la diferencia es únicamente el proveedor de embeddings y LLM.
 
-```
-Give the example
-```
+## Empezando
 
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
+### Prerequisitos
 
 ```
-Give an example
+- Python 3.10 o mayor
+- Pinecone API Key 
+- OpenAI API Key 
+- Groq API Key 
+- LangSmith API Key 
+- pip package manager
 ```
 
-### And coding style tests
+### Instalación
 
-Explain what these tests test and why
-
+1. **Clonar el repositorio**
+```bash
+git clone https://github.com/SantiagoSu15/RAG-Mini-Project.git
 ```
-Give an example
+
+2. **Crear un entorno virtual**
+```bash
+py -m venv venv
 ```
 
-## Deployment
+3. **Activar el entorno virtual**
+```bash
+venv\Scripts\activate
+```
 
-Add additional notes about how to deploy this on a live system
+4. **Instalar dependencias**
+```bash
+pip install -r requirements.txt
+```
 
-## Built With
+### Configurar variables de entorno
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+**Para la versión OpenAI (`RAG-openai.py`):**
+```bash
+set OPENAI_API_KEY=your_openai_key
+set PINECONE_API_KEY=your_pinecone_key
+set LANGSMITH_API_KEY=your_langsmith_key
+```
 
-## Contributing
+**Para la versión Groq (`RAG-.py`):**
+```bash
+set GROQ_API_KEY=your_groq_key
+set PINECONE_API_KEY=your_pinecone_key
+set LANGSMITH_API_KEY=your_langsmith_key
+```
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+### Ejecutar
 
-## Versioning
+```bash
+# OpenAI
+python RAG.py
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+# Groq + HuggingFace 
+python RAG-.py
+```
 
-## Authors
+## Actividad
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
+Ambos scripts implementan un RAG completo con los siguientes pasos:
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+1. **Carga del documento** — `RAG-openai.py` usa `PyPDFLoader` para cargar un PDF desde una URL.
+2. **Chunking** — El documento se divide en fragmentos de 1000 caracteres con overlap de 200 usando `RecursiveCharacterTextSplitter`.
+3. **Embeddings y almacenamiento** — Los fragmentos se convierten en vectores y se guardan en un índice de Pinecone.
+4. **Cadena RAG** — Ante una pregunta, el retriever busca los 4 fragmentos más relevantes en Pinecone y los inyecta como contexto al LLM para generar la respuesta.
 
-## License
+----
+**Prueba:**
+![Prueba](/prueba.png)
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
-## Acknowledgments
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+## Autor
+
+* **Santiago Suarez**
