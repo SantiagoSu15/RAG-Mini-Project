@@ -33,7 +33,6 @@ pc = Pinecone()
 
 if INDEX_NAME in pc.list_indexes().names():
     pc.delete_index(INDEX_NAME)
-    print("Índice anterior borrado.")
 
 pc.create_index(
     name=INDEX_NAME,
